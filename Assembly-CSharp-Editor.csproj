@@ -53,7 +53,6 @@
   <ItemGroup>
      <Compile Include="Assets\Editor\Chapter10\RenderCubemapWizard.cs" />
      <Compile Include="Assets\Editor\Chapter3\CustomShaderGUI.cs" />
-     <Compile Include="Assets\Editor\SetProperty\SetPropertyDrawer.cs" />
  <Reference Include="UnityEngine.UI">
  <HintPath>E:/unity3d/Editor/Data/UnityExtensions/Unity/GUISystem/UnityEngine.UI.dll</HintPath>
  </Reference>
@@ -141,6 +140,13 @@
  <Reference Include="UnityEngine.StandardEvents">
  <HintPath>C:/ProgramData/Unity/cache/packages/packages.unity.com/com.unity.standardevents@1.0.10/UnityEngine.StandardEvents.dll</HintPath>
  </Reference>
+ <Reference Include="SyntaxTree.VisualStudio.Unity.Bridge">
+ <HintPath>C:/Program Files (x86)/Microsoft Visual Studio Tools for Unity/15.0/Editor/SyntaxTree.VisualStudio.Unity.Bridge.dll</HintPath>
+ </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="Assembly-CSharp.csproj">
+      <Project>{6194664A-9ED4-F9D8-13CF-29AC2DDD9562}</Project>      <Name>Assembly-CSharp</Name>    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
