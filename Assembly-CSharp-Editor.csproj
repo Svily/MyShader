@@ -56,6 +56,7 @@
      <None Include="Assets\Shader\Chapter12-Edge.shader" />
      <None Include="Assets\Shader\Chapter12-BrghtnessSaturationAndContrast.shader" />
      <None Include="Assets\Shader\Chapter10-Fresnel.shader" />
+     <None Include="Assets\Shader\BumpedSpecular.shader" />
      <None Include="Assets\Shader\Chapter9-ForwardRendering.shader" />
      <None Include="Assets\Shader\Chapter-RampTexture.shader" />
      <None Include="Assets\Shader\Chapter10-Mirror.shader" />
@@ -66,8 +67,10 @@
      <None Include="Assets\Shader\Chapter8-AlphaBlend.shader" />
      <None Include="Assets\Shader\Chapter7-NormalMapTangentSpace.shader" />
      <None Include="Assets\Shader\Chapter12-GauusianBlur.shader" />
+     <None Include="Assets\Shader\BumpedDiffuse.shader" />
      <None Include="Assets\Shader\Chapter8-AlphaBlendBothSided.shader" />
      <None Include="Assets\Shader\Chapter10-Reflection.shader" />
+     <None Include="Assets\Shader\Chapter13-FogWithDepthTexture.shader" />
      <None Include="Assets\Shader\Chapter8-AlphaBlendZWrite.shader" />
      <None Include="Assets\Shader\C10-Reflect.shader" />
  <Reference Include="UnityEditor.Advertisements">
