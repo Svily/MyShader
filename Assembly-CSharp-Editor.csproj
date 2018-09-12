@@ -55,11 +55,13 @@
      <Compile Include="Assets\Editor\Chapter3\CustomShaderGUI.cs" />
      <None Include="Assets\Shader\Chapter12-Edge.shader" />
      <None Include="Assets\Shader\Chapter12-BrghtnessSaturationAndContrast.shader" />
+     <None Include="Assets\Shader\Chapter15-WaterWave.shader" />
      <None Include="Assets\Shader\Chapter10-Fresnel.shader" />
      <None Include="Assets\Shader\BumpedSpecular.shader" />
      <None Include="Assets\Shader\Chapter9-ForwardRendering.shader" />
      <None Include="Assets\Shader\Chapter-RampTexture.shader" />
      <None Include="Assets\Shader\Chapter10-Mirror.shader" />
+     <None Include="Assets\Shader\Water.shader" />
      <None Include="Assets\Shader\Chapter10-Refraction.shader" />
      <None Include="Assets\Shader\Chapter8-AlphaTest.shader" />
      <None Include="Assets\Shader\Chapter9-Shadow.shader" />
