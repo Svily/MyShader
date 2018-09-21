@@ -6,13 +6,14 @@
 	}
 	
 	SubShader {
-		CGINCLUDE
-		
-		#include "UnityCG.cginc"
-		
+
+		CGINCLUDE	
+		#include "UnityCG.cginc"	
 		sampler2D _MainTex;
+		//贴图纹素大小，用于计算相邻的像素坐标
 		float4 _MainTex_TexelSize;
 		sampler2D _BlurTex;
+		//深度贴图，由unity camera获取，从脚本传入
 		sampler2D _CameraDepthTexture;  
 		float _BlurSize;
 		float4 offsets;
@@ -25,7 +26,7 @@
 			half2 uv[5]: TEXCOORD0;
 		};
 
-		struct v2f_dof{
+		struct v2fDof{
 			float4 pos : SV_POSITION;
 			float2 uv : TEXCOORD0;
 			float2 uv1 : TEXCOORD01;
@@ -37,6 +38,7 @@
 			
 			half2 uv = v.texcoord;
 			
+			//纵向5个临近的纹理坐标
 			o.uv[0] = uv;
 			o.uv[1] = uv + float2(0.0, _MainTex_TexelSize.y * 1.0) * _BlurSize;
 			o.uv[2] = uv - float2(0.0, _MainTex_TexelSize.y * 1.0) * _BlurSize;
@@ -52,6 +54,7 @@
 			
 			half2 uv = v.texcoord;
 			
+			//横向5个纹理坐标
 			o.uv[0] = uv;
 			o.uv[1] = uv + float2(_MainTex_TexelSize.x * 1.0, 0.0) * _BlurSize;
 			o.uv[2] = uv - float2(_MainTex_TexelSize.x * 1.0, 0.0) * _BlurSize;
@@ -62,10 +65,12 @@
 		}
 		
 		fixed4 fragBlur(v2f i) : SV_Target{
+			//高斯滤波权重核
 			float weight[3] = {0.4026, 0.2442, 0.0545};		
 			fixed3 sum = tex2D(_MainTex, i.uv[0]).rgb * weight[0];
 			
 			for (int it = 1; it < 3; it++) {
+				//加权乘法，求目标像素颜色
 				sum += tex2D(_MainTex, i.uv[it*2-1]).rgb * weight[it];
 				sum += tex2D(_MainTex, i.uv[it*2]).rgb * weight[it];
 			}
@@ -74,8 +79,8 @@
 		}
 
 
-		v2f_dof vert_dof(appdata_img v){
-			v2f_dof o;
+		v2fDof vertDof(appdata_img v){
+			v2fDof o;
 
 			o.pos = UnityObjectToClipPos(v.vertex);
 			o.uv.xy = v.texcoord.xy;
@@ -90,15 +95,20 @@
 			return o;
 		}
 
-		fixed4 frag_dof(v2f_dof i) : SV_Target{
-			
-			fixed4 ori = tex2D(_MainTex, i.uv1);
-			fixed4 blur = tex2D(_MainTex, i.uv);
 
-			float depth = LinearEyeDepth(SAMPLE_DEPTH_TEXTURE(_CameraDepthTexture, i.uv));
-			
-			fixed4 final = (depth <= _foucousDistance) ? ori : lerp(ori, blur, clamp((depth - _foucousDistance) * _farBlurScale, 0, 1));
-			final = (depth > _foucousDistance) ? final : lerp(ori, blur, clamp((_foucousDistance - depth) * _nearBlurScale, 0, 1));
+		fixed4 fragDof(v2fDof i) : SV_Target{
+
+			//原图采样
+			fixed4 ori = tex2D(_MainTex, i.uv);
+			//高斯模糊图采样
+			fixed4 blur = tex2D(_BlurTex, i.uv1);
+			//线性转换采样后的深度值 深度值取值【0-1】 值越大越远
+			float depth = LinearEyeDepth(SAMPLE_DEPTH_TEXTURE(_CameraDepthTexture, i.uv1));
+			//对深度值大于焦点的物体进行模糊，远景模糊, 其余不作处理使用原图
+			fixed4 final = (depth > _foucousDistance) ? lerp(ori, blur, clamp((depth - _foucousDistance) * _farBlurScale, 0, 1)) : ori;
+			//在进行了远景模糊的基础上对深度值小于焦点的物体进行模糊，近景模糊
+			final = (depth <= _foucousDistance) ? lerp(ori, blur, clamp((_foucousDistance - depth) * _nearBlurScale, 0, 1)) : final;
+
 			return final;
 		}
 		    
@@ -106,6 +116,7 @@
 		
 		ZTest Always Cull Off ZWrite Off
 		
+		//横向高斯滤波
 		Pass {
 
 			CGPROGRAM
@@ -116,6 +127,7 @@
 			ENDCG  
 		}
 		
+		//纵向高斯滤波
 		Pass {  	
 			CGPROGRAM  
 			
@@ -125,16 +137,18 @@
 			ENDCG
 		}
 
+		//景深
 		Pass{
+
 			ZTest Off
 			ColorMask RGBA
 			CGPROGRAM  
 
-			#pragma vertex vert_dof  
-			#pragma fragment frag_dof
+			#pragma vertex vertDof  
+			#pragma fragment fragDof
 			
 			ENDCG
 		}
 	} 
-	FallBack "Diffuse"
+	FallBack Off
 }
