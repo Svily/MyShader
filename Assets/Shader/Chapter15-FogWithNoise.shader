@@ -21,6 +21,7 @@ Shader "Unity Shaders Book/Chapter 15/Fog With Noise" {
 		
 		sampler2D _MainTex;
 		half4 _MainTex_TexelSize;
+		//深度贴图
 		sampler2D _CameraDepthTexture;
 		half _FogDensity;
 		fixed4 _FogColor;
@@ -40,7 +41,7 @@ Shader "Unity Shaders Book/Chapter 15/Fog With Noise" {
 		
 		v2f vert(appdata_img v) {
 			v2f o;
-			o.pos = UnityObjectToClipPos(v.vertex);
+			o.pos = UnityObjectToClipPos(v.vertex); //mvp变换
 			
 			o.uv = v.texcoord;
 			o.uv_depth = v.texcoord;
@@ -71,17 +72,17 @@ Shader "Unity Shaders Book/Chapter 15/Fog With Noise" {
 		}
 		
 		fixed4 frag(v2f i) : SV_Target {
-			float linearDepth = LinearEyeDepth(SAMPLE_DEPTH_TEXTURE(_CameraDepthTexture, i.uv_depth));
-			float3 worldPos = _WorldSpaceCameraPos + linearDepth * i.interpolatedRay.xyz;
+			float linearDepth = LinearEyeDepth(SAMPLE_DEPTH_TEXTURE(_CameraDepthTexture, i.uv_depth)); //采样得到深度值并转换为线性值
+			float3 worldPos = _WorldSpaceCameraPos + linearDepth * i.interpolatedRay.xyz; //由摄像机在世界坐标系+偏移量获取在世界坐标系下的坐标
 			
 			float2 speed = _Time.y * float2(_FogXSpeed, _FogYSpeed);
-			float noise = (tex2D(_NoiseTex, i.uv + speed).r - 0.5) * _NoiseAmount;
+			float noise = (tex2D(_NoiseTex, i.uv + speed).r - 0.5) * _NoiseAmount; //噪声采样
 					
-			float fogDensity = (_FogEnd - worldPos.y) / (_FogEnd - _FogStart); 
-			fogDensity = saturate(fogDensity * _FogDensity * (1 + noise));
+			float fogDensity = (_FogEnd - worldPos.y) / (_FogEnd - _FogStart); //雾效系数，这里使用基于高度的线性雾
+			fogDensity = saturate(fogDensity * _FogDensity * (1 + noise)); 
 			
-			fixed4 finalColor = tex2D(_MainTex, i.uv);
-			finalColor.rgb = lerp(finalColor.rgb, _FogColor.rgb, fogDensity);
+			fixed4 finalColor = tex2D(_MainTex, i.uv); //原图采样
+			finalColor.rgb = lerp(finalColor.rgb, _FogColor.rgb, fogDensity); //着色，最终颜色由原图，设置的雾的颜色，雾浓度插值得到
 			
 			return finalColor;
 		}

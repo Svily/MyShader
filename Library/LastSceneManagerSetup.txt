@@ -1,4 +1,4 @@
 sceneSetups:
-- path: Assets/Sences/GerstnerWave.unity
+- path: Assets/Sences/DepthOfField.unity
   isLoaded: 1
   isActive: 1

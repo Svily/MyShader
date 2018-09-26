@@ -54,6 +54,7 @@ public class FogWithNoise : PostEffectsBase {
 	public float noiseAmount = 1.0f;
 
 	void OnEnable() {
+		//获取深度贴图
 		GetComponent<Camera>().depthTextureMode |= DepthTextureMode.Depth;
 	}
 		
@@ -66,11 +67,13 @@ public class FogWithNoise : PostEffectsBase {
 			float aspect = camera.aspect;
 			
 			float halfHeight = near * Mathf.Tan(fov * 0.5f * Mathf.Deg2Rad);
+			//辅助向量 用于计算射线方向
 			Vector3 toRight = cameraTransform.right * halfHeight * aspect;
 			Vector3 toTop = cameraTransform.up * halfHeight;
 			
+			//获取摄像机到近裁平面对角线四个顶点的向量
 			Vector3 topLeft = cameraTransform.forward * near + toTop - toRight;
-			float scale = topLeft.magnitude / near;
+			float scale = topLeft.magnitude / near; //获取欧氏距离，scale为缩放比例，利用相似三角形性质得出
 			
 			topLeft.Normalize();
 			topLeft *= scale;
@@ -94,8 +97,10 @@ public class FogWithNoise : PostEffectsBase {
 			
 			material.SetMatrix("_FrustumCornersRay", frustumCorners);
 
+			//控制雾浓度
 			material.SetFloat("_FogDensity", fogDensity);
 			material.SetColor("_FogColor", fogColor);
+			//雾的起始，终止点
 			material.SetFloat("_FogStart", fogStart);
 			material.SetFloat("_FogEnd", fogEnd);
 

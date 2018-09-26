@@ -16,7 +16,6 @@
 		//深度贴图，由unity camera获取，从脚本传入
 		sampler2D _CameraDepthTexture;  
 		float _BlurSize;
-		float4 offsets;
 		float _foucousDistance;
 		float _nearBlurScale;
 		float _farBlurScale;
@@ -65,12 +64,12 @@
 		}
 		
 		fixed4 fragBlur(v2f i) : SV_Target{
-			//高斯滤波权重核
+			//高斯核权重
 			float weight[3] = {0.4026, 0.2442, 0.0545};		
 			fixed3 sum = tex2D(_MainTex, i.uv[0]).rgb * weight[0];
-			
+			//迭代
 			for (int it = 1; it < 3; it++) {
-				//加权乘法，求目标像素颜色
+				//加权求和，求目标像素颜色
 				sum += tex2D(_MainTex, i.uv[it*2-1]).rgb * weight[it];
 				sum += tex2D(_MainTex, i.uv[it*2]).rgb * weight[it];
 			}
@@ -103,13 +102,13 @@
 			//高斯模糊图采样
 			fixed4 blur = tex2D(_BlurTex, i.uv1);
 			//线性转换采样后的深度值 深度值取值【0-1】 值越大越远
-			float depth = LinearEyeDepth(SAMPLE_DEPTH_TEXTURE(_CameraDepthTexture, i.uv1));
+			float depth = Linear01Depth(SAMPLE_DEPTH_TEXTURE(_CameraDepthTexture, i.uv1));
 			//对深度值大于焦点的物体进行模糊，远景模糊, 其余不作处理使用原图
-			fixed4 final = (depth > _foucousDistance) ? lerp(ori, blur, clamp((depth - _foucousDistance) * _farBlurScale, 0, 1)) : ori;
+			fixed4 finalColor = (depth > _foucousDistance) ? lerp(ori, blur, clamp((depth - _foucousDistance) * _farBlurScale, 0, 1)) : ori;
 			//在进行了远景模糊的基础上对深度值小于焦点的物体进行模糊，近景模糊
-			final = (depth <= _foucousDistance) ? lerp(ori, blur, clamp((_foucousDistance - depth) * _nearBlurScale, 0, 1)) : final;
+			finalColor = (depth <= _foucousDistance) ? lerp(ori, blur, clamp((_foucousDistance - depth) * _nearBlurScale, 0, 1)) : finalColor;
 
-			return final;
+			return finalColor;
 		}
 		    
 		ENDCG
@@ -120,7 +119,7 @@
 		Pass {
 
 			CGPROGRAM
-			  
+
 			#pragma vertex vertBlurVertical  
 			#pragma fragment fragBlur
 			  
