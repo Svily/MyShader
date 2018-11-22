@@ -207,7 +207,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   fogShader: {fileID: 4800000, guid: 19b384e887a628c4ca2aa7f7c94f3f23, type: 3}
-  fogDensity: 1
+  fogDensity: 1.024
   fogColor: {r: 1, g: 1, b: 1, a: 1}
   fogStart: -1.39
   fogEnd: 2.42

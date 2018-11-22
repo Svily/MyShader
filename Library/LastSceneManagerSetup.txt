@@ -1,4 +1,4 @@
 sceneSetups:
-- path: Assets/Sences/DepthOfField.unity
+- path: Assets/Sences/Water.unity
   isLoaded: 1
   isActive: 1

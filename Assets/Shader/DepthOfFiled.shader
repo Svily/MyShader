@@ -109,6 +109,7 @@
 			finalColor = (depth <= _foucousDistance) ? lerp(ori, blur, clamp((_foucousDistance - depth) * _nearBlurScale, 0, 1)) : finalColor;
 
 			return finalColor;
+			
 		}
 		    
 		ENDCG
